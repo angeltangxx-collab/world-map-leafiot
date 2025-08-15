@@ -1,0 +1,101 @@
+</html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive World Map</title>
+    <!-- Include Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+          crossorigin=""/>
+    <style>
+        /* Define the map container's size */
+        /* IMPORTANT: This height is crucial for the map to render */
+        #mapid {
+            height: 550px; /* Increased height for a better world view */
+            width: 100%; /* Ensure it takes full width of its container */
+            border-radius: 12px; /* Added for better aesthetics */
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15); /* Slightly stronger shadow */
+            margin-top: 20px; /* Add some space below the title */
+        }
+    </style>
+</head>
+<body style="font-family: 'Inter', sans-serif; margin: 0; padding: 25px; background-color: #eef2f3; color: #333;">
+    <div style="max-width: 1000px; margin: 0 auto; padding: 30px; background-color: #ffffff; border-radius: 16px; box-shadow: 0 10px 20px rgba(0,0,0,0.2);">
+        <h1 style="text-align: center; color: #2c3e50; margin-bottom: 15px; font-size: 2.5em;">🌍 Interactive World Tour Map 📍</h1>
+        <p style="text-align: center; color: #555; font-size: 1.1em; line-height: 1.6;">
+            Explore key global locations marked on this interactive map. Click on a pin to see its name, or click anywhere else to get its coordinates!
+        </p>
+        <!-- Map container -->
+        <div id="mapid"></div>
+        
+        <!-- Include Leaflet JavaScript -->
+        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+                integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+                crossorigin=""></script>
+
+        <script>
+            // Initialize the map on the 'mapid' div
+            // Set the initial view to a global perspective
+            var map = L.map('mapid').setView([20, 0], 2); // Centered globally with low zoom
+
+            // Add OpenStreetMap tiles to the map
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+
+            // Define the locations with their coordinates and names
+            var locations = [
+                { lat: 22.3193, lng: 114.1694, name: "Hong Kong" },
+                { lat: 31.2304, lng: 121.4737, name: "Shanghai" },
+                { lat: 1.3521, lng: 103.8198, name: "Singapore" },
+                { lat: -0.7893, lng: 113.9213, name: "Indonesia" }, // Central point of Indonesia
+                { lat: 56.1304, lng: -106.3468, name: "Canada" },   // Central point of Canada
+                { lat: 51.5074, lng: -0.1278, name: "London" },
+                { lat: 40.4168, lng: -3.7038, name: "Madrid" },
+                { lat: 41.8719, lng: 12.5674, name: "Italy" }      // Central point of Italy
+            ];
+
+            var bounds = []; // Array to store LatLngs for fitting bounds
+
+            // Add markers for each location
+            locations.forEach(function(location) {
+                var marker = L.marker([location.lat, location.lng])
+                                .addTo(map)
+                                .bindPopup("<b>" + location.name + "</b>");
+                bounds.push([location.lat, location.lng]); // Add to bounds array
+            });
+
+            // Fit the map view to show all markers when loaded
+            if (bounds.length > 0) {
+                map.fitBounds(bounds, { padding: [50, 50] }); // Add padding for better visual
+            }
+
+            // Optional: Handle map clicks to display coordinates in a popup
+            var popup = L.popup();
+
+            function onMapClick(e) {
+                popup
+                    .setLatLng(e.latlng)
+                    .setContent("You clicked the map at " + e.latlng.toString())
+                    .openOn(map);
+            }
+
+            map.on('click', onMapClick);
+
+            // Ensure map resizes correctly if its container changes size
+            window.addEventListener('resize', function() {
+                map.invalidateSize();
+            });
+
+            // Adjust the map size after it's loaded to ensure correct rendering,
+            // sometimes needed when embedded in iframes or dynamic content
+            window.onload = function() {
+                map.invalidateSize();
+            };
+
+        </script>
+    </div>
+</body>
+</html>
